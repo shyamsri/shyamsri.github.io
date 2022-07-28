@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8"></meta>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script>
+d3.csv("twitchdata-final.csv", function(data) {
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i].Channel);
+        console.log(data[i].Watch_time);
+    }
+});
+</script>
