@@ -25,15 +25,15 @@ var svg1 = d3.select("svg"),
 var g = svg1.append("g")
             .attr("transform", "translate("+margin+","+margin+")");
 
-/*
+
 g.selectAll(".circles")
 .data(data)
 .enter()
 .append("circle")
-.attr("cx", function(data) {return xs(data.'Watch time(Minutes)');})
-.attr("cy", function(data) {return ys(data.'Stream time(minutes)');})
+.attr("cx", function(data) {return xs(data.Watch_time);})
+.attr("cy", function(data) {return ys(data.Stream_time);})
 .attr("r", function(data) {return 2+Number.parseInt(data.Followers);});
-*/
+
 
 g.append("g")
 .attr("transform","translate("+margin+","+(margin)+")").call(d3.axisLeft(ys).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
