@@ -1,11 +1,58 @@
-<!DOCTYPE html>
-<meta charset="utf-8"></meta>
+<html>
 <script src="https://d3js.org/d3.v4.js"></script>
+<style> circle {fill: lightblue; stroke: black;} </style>
+<body onload='init()'>
+<svg width=300 height=300>
+</svg>
 <script>
-d3.csv("twitchdata-final.csv", function(data) {
+async function init() {
+
+
+const data = await d3.csv("twitchdata-final.csv", function(data) {
     for (var i = 0; i < data.length; i++) {
         console.log(data[i].Channel);
-        console.log(data[i].Watch_time);
+        
     }
 });
+xs = d3.scaleLog().domain([10,150]).range([0,200]);
+ys = d3.scaleLog().domain([10,150]).range([200,0]);
+console.log(data)
+
+var svg1 = d3.select("svg"),
+            margin = 50,
+            width = svg1.attr("width")  ,
+            height = svg1.attr("height") 
+var g = svg1.append("g")
+            .attr("transform", "translate("+margin+","+margin+")");
+
+/*
+g.selectAll(".circles")
+.data(data)
+.enter()
+.append("circle")
+.attr("cx", function(data) {return xs(data.'Watch time(Minutes)');})
+.attr("cy", function(data) {return ys(data.'Stream time(minutes)');})
+.attr("r", function(data) {return 2+Number.parseInt(data.Followers);});
+*/
+
+g.append("g")
+.attr("transform","translate("+margin+","+(margin)+")").call(d3.axisLeft(ys).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
+
+g.append("g")
+.attr("transform","translate("+margin+","+(250)+")").call(d3.axisBottom(xs).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
+
+
+
+
+
+}
 </script>
+</body>
+</html>
+        
+
+
+
+
+
+
