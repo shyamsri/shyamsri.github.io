@@ -8,15 +8,10 @@
 async function init() {
 
 
-const data = await d3.csv("twitchdata-final.csv", function(data) {
-    for (var i = 0; i < data.length; i++) {
-        console.log(data[i].Channel);
-        
-    }
-});
+const data = await d3.csv("twitchdata-final.csv")
 xs = d3.scaleLog().domain([10,150]).range([0,200]);
 ys = d3.scaleLog().domain([10,150]).range([200,0]);
-console.log(data)
+
 
 var svg1 = d3.select("svg"),
             margin = 50,
@@ -34,13 +29,13 @@ g.selectAll(".circles")
 .attr("cy", function(data) {return ys(data.Stream_time);})
 .attr("r", function(data) {return 2+Number.parseInt(data.Followers);});
 
-
+/*
 g.append("g")
 .attr("transform","translate("+margin+","+(margin)+")").call(d3.axisLeft(ys).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
 
 g.append("g")
 .attr("transform","translate("+margin+","+(250)+")").call(d3.axisBottom(xs).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
-
+*/
 
 
 
