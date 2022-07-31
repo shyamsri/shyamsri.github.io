@@ -1,58 +1,150 @@
 <html>
 <script src="https://d3js.org/d3.v4.js"></script>
-<style> rect {fill: lightblue; stroke: black; }</style>
 <body>
-<svg width=300 height=300>
-</svg>
+<h2>Twitch Data Narrative Visualization</h2>
+<div>
+<label for="Language">Select a Language: </label>    
+<select id="Language"></select>
+</div>    
+<div id="dataVisualization"></div>
 <script>
-var data = [4,8,15,16,23,42];
-var svg1 = d3.select("svg"),
-            margin = 50,
-            width = svg1.attr("width") -100 ,
-            height = svg1.attr("height")-100
 
-var xScale = d3.scaleBand().range([0, width]),
-            yScale = d3.scaleLinear().range([height, 0]);
- xScale.domain(data);
-        yScale.domain([0,42]);
+var margin = {top: 20, right: 10, bottom: 80, left: 70},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
 
 
-var g = svg1.append("g")
-            .attr("transform", "translate("+margin+","+margin+")");
+    var x = d3.scaleLinear()
+              .range([0, width]);
+    var y = d3.scaleLinear()
+              .range([height, 0]);
 
     
+    var svg = d3.select("#dataVisualization")
+    .append("svg")
+    .attr("id", "svg1")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+d3.csv("twitchdata-final.csv", function(data) {
+
+    var langselection = d3.select("#Language").attr("class","select").on("change",langchoice)
+    var options = langselection.selectAll("option")
+    .data(d3.map(data, function(d){return d.Language;}).keys())
+    .enter()
+    .append("option")
+    .text(function(d){return d;})
+    .attr("value",function(d){return d;});
+
+    function langchoice() {
+        selectChoice = d3.select('select').property('value')
+        d3.selectAll('svg').remove();
+        svg = d3.select("#dataVisualization")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform","translate(" + margin.left + "," + margin.top + ")");
+        barChart(data, selectChoice);
+    };
+    
+    
+    console.log(langselection)
+    function barChart(data, selectChoice){
+        var languageData = data.filter(function(d){
+            return d.Language == selectChoice
+        });
+        
+        var x = d3.scaleBand()
+        .range([0, width])
+        .domain(d3.map(languageData, function(d){return d.Mature;}).keys())
+        .padding(0.5);
+        svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+        var yMax = d3.max(languageData, function(d) { return d.Watch_time; } );
+        
+        console.log(yMax)
+
+        var y = d3.scaleLinear()
+        .domain([0, yMax])
+        .range([height, 0])
+        svg.append("g")
+        .call(d3.axisLeft(y).ticks(5));
+
         
 
-g.selectAll(".bar")
-         .data(data)
-         .enter().append("rect")
-     
-         .attr("x", function(d) { return xScale(d); })
-         .attr("y", function(d) { return yScale(d); })
-         .attr("width", xScale.bandwidth())
-         .attr("height", function(d) { return height - yScale(d); });
+        var languageTrue = languageData.filter(function(d){
+            return d.Mature == 'TRUE'
+        });
+        console.log(languageTrue)
+        var languageFalse = languageData.filter(function(d){
+            return d.Mature == 'FALSE'
+        });
 
-g.append("g")
-.attr("transform","translate("+margin+","+(margin)+")")
-         .call(d3.axisLeft(yScale).tickFormat(function(d){
-             return d;
-         }).ticks(9));
+        var trueMean = d3.mean(languageTrue, function(d) { return d.Watch_time; } );
+        var falseMean = d3.mean(languageFalse, function(d) { return d.Watch_time; } );
+        var trueFollowers = d3.mean(languageTrue, function(d) { return d.Followers; } );
+        var falseFollowers = d3.mean(languageFalse, function(d) { return d.Followers; } );
+
+        if (trueMean == null) {
+            trueMean = 0;
+            trueFollowers = 0;
+        };
+        if (falseMean == null) {
+            falseMean = 0;
+            falseFollowers = 0;
+        };
+        
 
 
-        g.append("g")
-         .attr("transform","translate("+margin+","+(margin+height)+")")
-         .call(d3.axisBottom(xScale).tickFormat(function(d){
-           return d;
-         })
-         );
+        var finaldata = [
+            {Watch_time: trueMean, Followers: trueFollowers, Mature: 'TRUE'},
+            {Watch_time: falseMean, Followers: falseFollowers, Mature: 'FALSE'},
+        ];
+        console.log(finaldata)
+
+        svg.selectAll("mybar")
+        .data(finaldata)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) { 
+        	return x(d.Mature);
+        })
+        .attr("width", x.bandwidth())
+        .attr("fill", "#50BA11")
+        
+        .attr("height", function(d) { return height - y(d.Watch_time); }) // always equal to 0
+        .attr("y", function(d) { return y(d.Watch_time); })
+    
+    }
+    
+    
+    
+    var selectChoice = "English"
+    barChart(data, selectChoice)
+
+
+    
+
+
+
+
+   
+
+
+
+
+});
 </script>
 </body>
 </html>
-        
-
-
-
-
-
-
