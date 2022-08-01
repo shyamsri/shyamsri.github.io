@@ -53,6 +53,9 @@ d3.csv("twitchdata-final.csv", function(data) {
         .text(function(d){return d;})
         .attr("value",function(d){return d;});
 
+    //call y max of full dataset
+    var y_max = d3.max(data, function(d) { return d.Watch_time; } );
+
     function lang_choice() {
         select_choice = d3.select('select').property('value')
         d3.selectAll('svg').remove();
@@ -62,12 +65,13 @@ d3.csv("twitchdata-final.csv", function(data) {
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform","translate(" + margin.left + "," + margin.top + ")");
-        barChart(data, select_choice);
-    };
+        barChart(data, select_choice, y_max);
+    };   
     
+
     //Create bar chart and add mouseover property for annotations
     console.log(lang_selection)
-    function barChart(data, select_choice){
+    function barChart(data, select_choice, y_max){
         var language_data = data.filter(function(d){
             return d.Language == select_choice
         });
@@ -84,7 +88,7 @@ d3.csv("twitchdata-final.csv", function(data) {
         
 
         
-        var y_max = d3.max(language_data, function(d) { return d.Watch_time; } );
+        
 
         var y = d3.scaleLinear()
             .domain([0, y_max])
@@ -154,7 +158,7 @@ d3.csv("twitchdata-final.csv", function(data) {
     
     //Call function to create visualization and setup default language choice of English
     var select_choice = "English"
-    barChart(data, select_choice) 
+    barChart(data, select_choice, y_max) 
 });
 </script>
 </body>
